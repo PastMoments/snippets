@@ -22,7 +22,8 @@ public:
             std::transform(hamming_nums.begin(), hamming_nums.end(), std::inserter(new_set, new_set.end()), [](unsigned long i) { return (ULONG_MAX/2 > i ?  2 * i : 1); });
             std::transform(hamming_nums.begin(), hamming_nums.end(), std::inserter(new_set, new_set.end()), [](unsigned long i) { return (ULONG_MAX/3 > i ?  3 * i : 1); });
             std::transform(hamming_nums.begin(), hamming_nums.end(), std::inserter(new_set, new_set.end()), [](unsigned long i) { return (ULONG_MAX/5 > i ?  5 * i : 1); });
-            hamming_nums.insert(new_set.begin(), new_set.end());
+            unsigned long new_val = *new_set.upper_bound(*hamming_nums.rbegin());
+            hamming_nums.insert(new_val);
 
             ++largest_index;
         }
@@ -35,7 +36,7 @@ std::set<unsigned long> Hamming::hamming_nums = {1};
 std::set<unsigned long>::size_type Hamming::largest_index = 0;
 
 int main() {
-  std::vector<unsigned long> hammingVec(16);
+  std::vector<unsigned long> hammingVec(128);
   std::generate(hammingVec.begin(), hammingVec.end(), Hamming());
 
   for(const auto& i : hammingVec) {
