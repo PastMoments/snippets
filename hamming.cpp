@@ -12,33 +12,29 @@ class Hamming {
     typedef unsigned long NumberType;
     typedef std::set<NumberType> NumberSetType;
     static NumberSetType hamming_nums;
-    static NumberSetType::size_type largest_index; // largest confirmed pre-calculated index
 
     NumberSetType::size_type index = 0;
 public:
     Hamming() {}
     NumberType operator()() {
         // create new numbers and merge
-        if(largest_index <= index){
+        if(hamming_nums.size() <= index){
             NumberSetType new_set;
-            std::transform(hamming_nums.begin(), hamming_nums.end(), std::inserter(new_set, new_set.end()), [](NumberType i) { return (ULONG_MAX/2 > i ?  2 * i : 1); });
-            std::transform(hamming_nums.begin(), hamming_nums.end(), std::inserter(new_set, new_set.end()), [](NumberType i) { return (ULONG_MAX/3 > i ?  3 * i : 1); });
-            std::transform(hamming_nums.begin(), hamming_nums.end(), std::inserter(new_set, new_set.end()), [](NumberType i) { return (ULONG_MAX/5 > i ?  5 * i : 1); });
+            std::transform(hamming_nums.upper_bound(*hamming_nums.rbegin()/2), hamming_nums.end(), std::inserter(new_set, new_set.end()), [](NumberType i) { return (ULONG_MAX/2 > i ?  2 * i : 1); });
+            std::transform(hamming_nums.upper_bound(*hamming_nums.rbegin()/3), hamming_nums.end(), std::inserter(new_set, new_set.end()), [](NumberType i) { return (ULONG_MAX/3 > i ?  3 * i : 1); });
+            std::transform(hamming_nums.upper_bound(*hamming_nums.rbegin()/5), hamming_nums.end(), std::inserter(new_set, new_set.end()), [](NumberType i) { return (ULONG_MAX/5 > i ?  5 * i : 1); });
             NumberType new_val = *new_set.upper_bound(*hamming_nums.rbegin());
             hamming_nums.insert(new_val);
-
-            ++largest_index;
         }
-        NumberSetType::const_iterator current = std::next(hamming_nums.begin(), index);        
+        NumberType val = *std::next(hamming_nums.begin(), index);        
         ++index;
-        return *current;
+        return val;
     }
 };
 Hamming::NumberSetType Hamming::hamming_nums = {1};
-Hamming::NumberSetType::size_type Hamming::largest_index = 0;
 
 int main() {
-  std::vector<unsigned long> hammingVec(128);
+  std::vector<unsigned long> hammingVec(512);
   std::generate(hammingVec.begin(), hammingVec.end(), Hamming());
 
   for(const auto& i : hammingVec) {
